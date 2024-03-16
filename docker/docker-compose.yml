@@ -86,7 +86,7 @@ services:
       CONSOLE_RAW_AUTH_TOKENS: ${CONSOLE_TOKEN:-default}
       BULKER_AUTH_KEY: ${BULKER_TOKEN:-default}
       MIT_COMPLIANT: ${MIT_COMPLIANT:-false}
-      DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:-default}@postgres:5432/postgres?schema=newjitsu"
+      DATABASE_URL: "postgresql://root:${POSTGRES_PASSWORD:-default}@postgres:5432/postgres?schema=newjitsu"
       SEED_USER_EMAIL: ${SEED_USER_EMAIL:-}
       SEED_USER_PASSWORD: ${SEED_USER_PASSWORD:-}
       ENABLE_CREDETIALS_LOGIN: ${ENABLE_CREDETIALS_LOGIN:-true}
