@@ -41,6 +41,8 @@ services:
       options:
         max-size: 10m
         max-file: "3"
+    ports:
+      - "8123:8123"
 
   mongo:
     image: mongo
@@ -53,9 +55,9 @@ services:
     tty: true
     image: postgres:14
     restart: "unless-stopped"
-    user: postgres
+    user: root
     environment:
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=root
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-default}
     logging:
       options:
@@ -69,8 +71,8 @@ services:
     ports:
       - "${EXTERNAL_POSTGRES_PORT:-5432}:5432"
   ## permissions problem is not that trivial to solve https://forums.docker.com/t/data-directory-var-lib-postgresql-data-pgdata-has-wrong-ownership/17963/42
-  #    volumes:
-  #      - ./data/postgres:/var/lib/postgresql/data
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
 
   console:
     tty: true
@@ -139,7 +141,7 @@ services:
       BULKER_CONFIG_SOURCE: "http://console:3000/api/admin/export/bulker-connections"
       BULKER_CONFIG_SOURCE_HTTP_AUTH_TOKEN: "service-admin-account:${CONSOLE_TOKEN:-default}"
       BULKER_CACHE_DIR: "/tmp/cache"
-      BULKER_INTERNAL_TASK_LOG: '{"id":"task_log","metricsKeyPrefix":"syncs","usesBulker":true,"type":"postgres","options":{"mode":"stream"},"credentials":{"host":"postgres","port":5432,"sslMode":"disable","database":"postgres","password":"${POSTGRES_PASSWORD:-default}","username":"postgres","defaultSchema":"newjitsu"}}'
+      BULKER_INTERNAL_TASK_LOG: '{"id":"task_log","metricsKeyPrefix":"syncs","usesBulker":true,"type":"postgres","options":{"mode":"stream"},"credentials":{"host":"postgres","port":5432,"sslMode":"disable","database":"postgres","password":"${POSTGRES_PASSWORD:-default}","username":"root","defaultSchema":"newjitsu"}}'
       BULKER_CLICKHOUSE_HOST: "clickhouse:9000"
       BULKER_CLICKHOUSE_PASSWORD: "${CLICKHOUSE_PASSWORD:-default}"
       BULKER_CLICKHOUSE_DATABASE: "newjitsu_metrics"
@@ -229,8 +231,8 @@ services:
       HTTP_PORT: ${EXTERNAL_SYNCS_PORT:-3043}
       SYNCCTL_SYNCS_ENABLED: ${SYNCS_ENABLED:-false}
       SYNCCTL_RAW_AUTH_TOKENS: ${SYNCCTL_TOKEN:-default}
-      SYNCCTL_DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:-default}@127.0.0.1:${EXTERNAL_POSTGRES_PORT:-5432}/postgres?search_path=newjitsu"
-      SYNCCTL_SIDECAR_DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:-default}@${EXTERNAL_POSTGRES_HOST}:${EXTERNAL_POSTGRES_PORT:-5432}/postgres?search_path=newjitsu"
+      SYNCCTL_DATABASE_URL: "postgresql://root:${POSTGRES_PASSWORD:-default}@127.0.0.1:${EXTERNAL_POSTGRES_PORT:-5432}/postgres?search_path=newjitsu"
+      SYNCCTL_SIDECAR_DATABASE_URL: "root://postgres:${POSTGRES_PASSWORD:-default}@${EXTERNAL_POSTGRES_HOST}:${EXTERNAL_POSTGRES_PORT:-5432}/postgres?search_p>
       SYNCCTL_BULKER_URL: "http://${EXTERNAL_BULKER_HOST}:${EXTERNAL_BULKER_PORT:-3042}"
       SYNCCTL_BULKER_AUTH_TOKEN: ${BULKER_TOKEN:-default}
       SYNCCTL_KUBERNETES_CLIENT_CONFIG: "${SYNCCTL_KUBERNETES_CLIENT_CONFIG:-local}"
